@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Houses Object/Relational file -->        
+<hibernate-mapping package="com.hibernate.domain">
+	<class name="Houses" table="houses">
+		<id name="mac" type="String" column="mac">
+			<generator class="native"/>
+		</id>
+		<!-- <property name="account" not-null="true" type="String" column="account"/> -->
+		<property name="location" type="Point2D" column="location"/>
+		<many-to-one name="account" class="com.hibernate.domain.Users" 
+		column="account" not-null="true" cascade="all"/>
+	</class>
+</hibernate-mapping>

@@ -38,7 +38,7 @@ System.out.println(sock);
 		private int type;//type 0 TQ2440 type 1 PC 
 		private Socket sock=null;
 		private DataInputStream dataIn = null;
-		public Terminal(Socket xSock)
+		public Terminal(Socket xSock) 
 		{
 			startThread();
 			sock = xSock;	
@@ -46,7 +46,9 @@ System.out.println(sock);
 			try {
 				dataIn = new DataInputStream(
 							new BufferedInputStream(sock.getInputStream()));
-			} catch (IOException e) {
+System.out.println("dataIn:"+dataIn);
+Thread.sleep(100);//这个sleep是必要的 不加经常会出现NullPointerException DateInputStream会经常申请不出来
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -87,22 +89,22 @@ System.out.println(sock);
 		{
 //System.out.println("Packet Length:");
 			final int sleepMS = 10;
+			
 			int packetFlag=0;
 			try {
 System.out.println(dataIn);
-				while(dataIn.available()==0);
+				while(dataIn.available()==0)Thread.sleep(20);;
 				while(((packetFlag=dataIn.readInt())&VERIFYMASK) !=  VERIFYHEADER);
 				int packLen = dataIn.readInt();
 				while(dataIn.available()<packLen) 
-					Thread.sleep(10);
+					Thread.sleep(sleepMS);
 			} 
 			catch (EOFException e)
 			{
 			}
-			catch (IOException | InterruptedException e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 	}
 

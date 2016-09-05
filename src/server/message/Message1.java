@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+import com.hibernate.manager.UsersManager;
+import com.hibernate.manager.UsersManagerImpl;
+
 public class Message1 extends Message {
 
 	private String  account;
@@ -28,10 +31,12 @@ public class Message1 extends Message {
 	//在handle中就应该把生成的MessageX进队了
 	public MsgSend handleMessage()
 	{
-System.out.println("Message1:HandleMessage");
-System.out.println("account:"+ account+ "password:"+ passwd);
-//		boolean isRight=verify(account,passwd);
-		boolean isRight=true;
+		UsersManager userManager = new UsersManagerImpl();
+		boolean isRight=userManager.verify(account, passwd);
+//		boolean isRight=true;
+System.out.println("Account:" + account);
+System.out.println("Password:" + passwd);
+System.out.println("Login Result:" + isRight);
 		byte msgID=1;
 		
 		EncapToBytes encap=new EncapToBytes();
