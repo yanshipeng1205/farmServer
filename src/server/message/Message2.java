@@ -9,17 +9,28 @@ import java.util.Scanner;
 import com.hibernate.manager.UsersManager;
 import com.hibernate.manager.UsersManagerImpl;
 
+import server.util.UserInfo;
+/**
+ * Message1: Register Message from pc client.
+ * Purpose:	 register user.
+ * Received Packet Structure:(only content after MSGID)
+ * account(string)+password(string)+name(string)+[email(string)] []表示可有可无
+ * Return Packet Structure: isOK(byte)
+ * @author ysp
+ *
+ */
 public class Message2 extends Message{
 	private String account;
 	private String password;
 	private String name;
 	private String email;
-	
-	public Message2(Socket xSS,DataInputStream in)//解码 account+TOKENFLAG+password
+	private static byte msgID=2;
+	private boolean isOK=false;
+	public Message2(UserInfo userInfo,DataInputStream in)//解码 account+TOKENFLAG+password
 	{
+		super(userInfo);
 		try {
 System.out.println("Message 2 Constructor");
-			ss=xSS;
 			byte[] buf=new byte[in.available()];
 			in.read(buf);
 			String tmp=new String(buf);
@@ -43,11 +54,16 @@ System.out.println("Message 2 Constructor");
 	@Override
 	public MsgSend handleMessage() {
 		UsersManager userManager = new UsersManagerImpl();
-		boolean isOK=userManager.register(account, password, name, email);
-		byte msgID=2;
+		isOK=userManager.register(account, password, name, email);
+		return messageEncap();
+	}
+	
+	@Override
+	MsgSend messageEncap()
+	{
 		EncapToBytes encap=new EncapToBytes();
-		byte[] msgBytes=encap.getBytes(msgID,(byte)(isOK?1:0));;
-		MsgSend msgRet=getSendMsg(msgBytes,ss);
+		byte[] msgBytes=encap.getBytes(msgID,(byte)(isOK?1:0));
+		MsgSend msgRet=getSendMsg(msgBytes,userInfo.sock);
 		return msgRet;
 	}
 }

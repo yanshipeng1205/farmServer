@@ -3,12 +3,19 @@ package server.message;
 
 import java.net.Socket;
 import java.util.*;
+
+import server.util.UserInfo;
+
 import java.io.*;
 
 public abstract class Message {
-	Socket ss;
 	protected static final String TOKENFLAG=String.format("%c", 0x11);
-	public  abstract MsgSend handleMessage();
+	protected UserInfo userInfo=null;
+	public Message(UserInfo xUserInfo)
+	{
+		userInfo = xUserInfo;
+	}
+	
 	protected MsgSend getSendMsg(byte[] msgBytes,Socket sock)
 	{
 		MsgSend msgRet=null;
@@ -20,4 +27,6 @@ public abstract class Message {
 		}
 		return msgRet;
 	}
+	public  abstract MsgSend handleMessage();
+	abstract MsgSend messageEncap();
 }

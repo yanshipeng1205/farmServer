@@ -1,5 +1,7 @@
-package server;
+    package server;
 import server.message.*;
+import server.util.UserInfo;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -7,7 +9,6 @@ import java.util.*;
 public class farmServer {
 
 	private final int serverPort=12345;
-	ServerSocket serverSock = new ServerSocket(serverPort);
 	private static final int VERIFYHEADER = 0xABCD0000;
 	private static final int VERIFYMASK	  = 0xFFFF0000;
 	private static Queue<MsgSend> sendMsgQ=new LinkedList<MsgSend>();
@@ -17,50 +18,51 @@ public class farmServer {
 		new farmServer();
 	}
 	
-	public farmServer() throws IOException {
+	public farmServer()  {
 		
-		sendThread sT=new sendThread();
-		while(true)
+		try
 		{
-			Socket   sock = serverSock.accept();//这应该对应的是TCP三次握手机制=>raise Q
+			ServerSocket serverSock = new ServerSocket(serverPort);
+			sendThread sT=new sendThread();
+			while(true)
+			{
+				Socket   sock = serverSock.accept();//这应该对应的是TCP三次握手机制=>raise Q
 System.out.println(sock);
-			Terminal term = new Terminal(sock);
-			//ip(MAC)->terminal ID对应表
-			
+					Terminal term = new Terminal(sock);
+					//ip(MAC)->terminal ID对应表
+				
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
-	/**
-	 * 
-	 * process corresponding Messages(需要一个消息处理器）
-	 */
+
 	private class Terminal implements Runnable
 	{
 		private int type;//type 0 TQ2440 type 1 PC 
 		private Socket sock=null;
 		private DataInputStream dataIn = null;
+		private UserInfo userInfo=new UserInfo();
 		public Terminal(Socket xSock) 
 		{
-			startThread();
-			sock = xSock;	
-			//保持连接并且确认对方在线
+			userInfo.sock = xSock;	
 			try {
-				dataIn = new DataInputStream(
-							new BufferedInputStream(sock.getInputStream()));
-System.out.println("dataIn:"+dataIn);
-Thread.sleep(100);//这个sleep是必要的 不加经常会出现NullPointerException DateInputStream会经常申请不出来
+				dataIn = new DataInputStream(userInfo.sock.getInputStream());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			startThread();
 		}
 		public void run() 
 		{
 			termConnInit();
-//System.out.println("New Connection");
 			while(true)
 			{
 				try {
 					readPacket();					
-					Message msg=packetProcFacotry.getMsg(sock,dataIn);
+					Message msg=packetProcFacotry.getMsg(userInfo,dataIn);
 					MsgSend waitSendMsg=msg.handleMessage();
 					sendMsgQ.add(waitSendMsg);
 				} catch (Exception e)
@@ -79,7 +81,7 @@ Thread.sleep(100);//这个sleep是必要的 不加经常会出现NullPointerException DateInp
 		private void termConnInit()
 		{
 			try {
-				sock.setKeepAlive(true);//保持长连接
+				userInfo.sock.setKeepAlive(true);//保持长连接
 			} catch (SocketException e) {
 				e.printStackTrace();
 			}
@@ -93,7 +95,8 @@ Thread.sleep(100);//这个sleep是必要的 不加经常会出现NullPointerException DateInp
 			int packetFlag=0;
 			try {
 System.out.println(dataIn);
-				while(dataIn.available()==0)Thread.sleep(20);;
+//至少在未解决如何判断客户端连接终端之前，这句判断当前是否有数据是必要的
+				while(dataIn.available()==0)Thread.sleep(20);
 				while(((packetFlag=dataIn.readInt())&VERIFYMASK) !=  VERIFYHEADER);
 				int packLen = dataIn.readInt();
 				while(dataIn.available()<packLen) 
@@ -102,21 +105,37 @@ System.out.println(dataIn);
 			catch (EOFException e)
 			{
 			}
+//			catch (NullPointerException e)
+//			{
+//				System.out.println("NullPointerException");
+////				e.printStackTrace();
+//			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
+	
+	/**
+	 * 给各个终端发送消息，消息是由MessageX处理所接收的消息后得来的
+	 * 
+	 * @author ysp
+	 */
 	private class sendThread implements Runnable
 	{
 		private Thread sendTh=null; 
+		/**
+		 * Class constructor: create a thread to send message and start it.
+		 */
 		public sendThread()
 		{
 			sendTh = new Thread(this);
 			sendTh.start();
 		}
 	
+		/**
+		 * 
+		 */
 		public void run()
 		{
 //System.out.println("Sending Thread is working");

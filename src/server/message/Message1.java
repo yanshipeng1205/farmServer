@@ -8,15 +8,28 @@ import java.util.Scanner;
 import com.hibernate.manager.UsersManager;
 import com.hibernate.manager.UsersManagerImpl;
 
+import server.util.UserInfo;
+
+/**
+ * Message1: Login Message from pc client.
+ * Purpose:	 verify whether the login is right or not.
+ * Received Packet Structure:(only content after MSGID)
+ * account(string)+password(string)
+ * Return Packet Structure: isRight(byte)
+ * @author ysp
+ *
+ */
 public class Message1 extends Message {
 
 	private String  account;
 	private String  passwd;
-	private boolean isRight;
-	public Message1(Socket xSS,DataInputStream in)//解码 account+TOKENFLAG+password
+	private static byte msgID=1;
+	private boolean isRight=false;
+	
+	public Message1(UserInfo userInfo,DataInputStream in)//解码 account+TOKENFLAG+password
 	{
+		super(userInfo);
 		try {
-			ss=xSS;
 			byte[] buf=new byte[in.available()];
 			in.read(buf);
 			String tmp=new String(buf);
@@ -28,22 +41,32 @@ public class Message1 extends Message {
 			e.printStackTrace();
 		}
 	}
-	//在handle中就应该把生成的MessageX进队了
+	
+	/**
+	 * handle message according the received message
+	 * @return return the message that we want to send
+	 */
 	public MsgSend handleMessage()
 	{
 		UsersManager userManager = new UsersManagerImpl();
-		boolean isRight=userManager.verify(account, passwd);
-//		boolean isRight=true;
-System.out.println("Account:" + account);
-System.out.println("Password:" + passwd);
-System.out.println("Login Result:" + isRight);
-		byte msgID=1;
-		
+		isRight=userManager.verify(account, passwd);
+		if(isRight==true)
+		{
+			userInfo.account = account;
+		}
+
+		return messageEncap();
+	}
+	
+	/**
+	 * encapsulate our processed result to Class MsgSend
+	 * @return return the message that we want to send
+	 */
+	MsgSend messageEncap()
+	{
 		EncapToBytes encap=new EncapToBytes();
 		byte[] msgBytes=encap.getBytes(msgID,(byte)(isRight?1:0));
-//System.out.println(msgBytes);
-		MsgSend msgRet=getSendMsg(msgBytes,ss);
-//System.out.println(msgRet);
+		MsgSend msgRet=getSendMsg(msgBytes,userInfo.sock);
 		return msgRet;
 	}
 	

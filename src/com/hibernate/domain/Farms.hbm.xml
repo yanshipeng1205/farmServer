@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Houses Object/Relational file -->        
+<hibernate-mapping package="com.hibernate.domain">
+	<class name="Farms" table="houses">
+		<id name="id" type="java.lang.Integer" column="id">
+		<generator class="native"/>
+		</id>
+		<!-- default id generator is assigned. -->
+		<many-to-one name="account" class="com.hibernate.domain.Users" column="account" />
+		<property name="farmName" type="java.lang.String" column="farmName"/>
+		<property name="mac" type="java.lang.String" column="mac"></property>
+		
+				<!-- <property name="account" not-null="true" type="String" column="account"/> -->
+		<!-- cascade="all"  		
+				<property name="longitude" type="java.lang.Double" column="longitude"/>
+				<property name="latitude"  type="java.lang.Double" column="latitude"/>
+		
+		
+		-->
+		
+	</class>
+</hibernate-mapping>

@@ -17,6 +17,8 @@ public class UsersManagerImpl implements UsersManager {
 	public  boolean verify(String account, String password) {
 		try
 		{
+System.out.println("Account:"+account);
+System.out.println("password:"+password);
 			HibernateUtil.beginTransaction();
 			String sql= "select u from com.hibernate.domain.Users u "
 					   +"WHERE u.account= :account AND u.password= :password";
@@ -42,6 +44,7 @@ System.out.println("Users Account:"+user.getAccount());
 		try
 		{
 			HibernateUtil.beginTransaction();
+			
 			Users user = new Users();
 			user.setAccount(account);
 			user.setPassword(password);
@@ -49,6 +52,7 @@ System.out.println("Users Account:"+user.getAccount());
 			user.setEmail(email);
 			user.setOnlineStatus(new Integer(0));
 			user.setRegisterDate(Users.getCurrentSqlDate());
+			
 			HibernateUtil.getSession().save(user);
 			HibernateUtil.commitTransaction();
 			return true;

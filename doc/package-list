@@ -1,0 +1,6 @@
+com.hibernate.dao
+com.hibernate.domain
+com.hibernate.manager
+com.hibernate.util
+server
+server.message

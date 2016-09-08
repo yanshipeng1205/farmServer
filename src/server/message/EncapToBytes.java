@@ -3,16 +3,17 @@ package server.message;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 
 class EncapToBytes
 {
 	private static final int MSGHEADER=0xABCD0000;
-//	private StringBuilder str = new StringBuilder();
 	private ByteArrayOutputStream byteOut=new ByteArrayOutputStream();
 	private DataOutputStream      dataOut=new DataOutputStream(byteOut);
+	private  final String TOKENFLAG=String.format("%c", 0x11);
+
 	private int msgLen=0;
-//	private boolean flag=false;
 	public EncapToBytes()
 	{
 //		try {
@@ -32,8 +33,6 @@ class EncapToBytes
 			dataOut.writeInt(msgLen);
 			dataOut.write(msgID);//大小端在哪设置 默认的是大端么
 			dataOut.write(val);
-//			msgLen=2;
-//			writeLen();
 			dataOut.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -41,14 +40,39 @@ class EncapToBytes
 		return byteOut.toByteArray();
 	}
 	
-	private void writeLen()
+	public byte[] getBytes(byte msgID, Map<String,Integer> farms)
 	{
-		final int mask=0xff;//加上final为何不行了
-		byte[] bytes=byteOut.toByteArray();
-		//how to improve it
-		bytes[4]=(byte)(msgLen>>>24 & mask);
-		bytes[5]=(byte)(msgLen>>>16 & mask);
-		bytes[6]=(byte)(msgLen>>>8  & mask);
-		bytes[7]=(byte)(msgLen      & mask);
+		try {
+			byte[] msgBytes=mergeMapStrInt(farms);
+			
+			msgLen=msgBytes.length+1;//需要把MSGID算进去
+			dataOut.writeInt(MSGHEADER);
+			dataOut.writeInt(msgLen);
+			dataOut.write(msgID);
+			dataOut.write(msgBytes);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return byteOut.toByteArray();
+	}
+	
+	public byte[] mergeMapStrInt(Map<String, Integer> farms)
+	{
+		StringBuilder msg = new StringBuilder();
+		for(Map.Entry<String, Integer> entry:farms.entrySet())
+		{
+System.out.println("Key:"+entry.getKey()+"  value："+entry.getValue().toString());
+			msg.append(entry.getKey()+TOKENFLAG);
+			msg.append(entry.getValue().toString()+TOKENFLAG);
+		}
+		if(msg.length()>0)
+		{
+			msg.deleteCharAt(msg.length()-1);
+		}
+System.out.println("StringBuilder:"+msg);
+		return msg.toString().getBytes();	
+		
 	}
 }
+

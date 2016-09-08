@@ -28,10 +28,11 @@
 	org.hibernate.dialect.MySQLDialect
 	</property>
 	<property name="current_session_context_class">thread</property>
+   	<property name="hdm2ddl.auto">update</property>
 	
 	
 	<mapping resource="com/hibernate/domain/Users.hbm.xml"/>
-	<!-- <mapping resource="com/hibernate/domain/Houses.hbm.xml"/> -->
+	<mapping resource="com/hibernate/domain/Farms.hbm.xml"/>
 	</session-factory>
 	
 </hibernate-configuration>

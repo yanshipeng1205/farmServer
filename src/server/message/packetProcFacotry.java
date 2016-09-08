@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 
+import server.util.UserInfo;
+
 public class packetProcFacotry {
 	
 	private packetProcFacotry()
@@ -29,15 +31,15 @@ public class packetProcFacotry {
 		return msgID;
 	}
 	
-	public static Message getMsg(Socket sock,DataInputStream in) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException
+	public static Message getMsg(UserInfo userInfo,DataInputStream in) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException
 	{
 		int msgID = getMsgId(in);
 //System.out.println("MSGID:"+msgID);
 		String msgClassName 	= "server.message.Message" + msgID;
 System.out.println(msgClassName);
 		Class  msgClass 	 	= Class.forName(msgClassName);
-		Constructor<?> msgCons = msgClass.getConstructor(Socket.class,DataInputStream.class);
-		Message msg    =(Message)msgCons.newInstance(sock,in);
+		Constructor<?> msgCons = msgClass.getConstructor(UserInfo.class,DataInputStream.class);
+		Message msg    =(Message)msgCons.newInstance(userInfo,in);
 //System.out.println(msg);
 		return msg;
 	}

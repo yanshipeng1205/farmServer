@@ -2,6 +2,7 @@ package com.hibernate.util;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
@@ -22,16 +23,17 @@ public class HibernateUtil {
 		return sessionFactory;
 	}
 	
-	public static Session beginTransaction()
+	public static void beginTransaction()
 	{
-		Session session=getSession();
-		session.beginTransaction();
-		return session;
+		getSession().beginTransaction();
 	}
 	
 	public static void commitTransaction()
 	{
-		getSession().getTransaction().commit();
+		Transaction tx = getSession().getTransaction();
+		tx.commit();
+//		if(!tx.wasCommitted())
+//			tx.commit();
 	}
 	
 	public static void rollbackTransaction()
