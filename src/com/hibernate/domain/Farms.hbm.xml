@@ -11,14 +11,11 @@
 		<!-- default id generator is assigned. -->
 		<many-to-one name="account" class="com.hibernate.domain.Users" column="account" />
 		<property name="farmName" type="java.lang.String" column="farmName"/>
-		<property name="mac" type="java.lang.String" column="mac"></property>
+		<property name="mac" type="java.lang.String" column="mac" unique="true"/>
 		
-				<!-- <property name="account" not-null="true" type="String" column="account"/> -->
 		<!-- cascade="all"  		
 				<property name="longitude" type="java.lang.Double" column="longitude"/>
 				<property name="latitude"  type="java.lang.Double" column="latitude"/>
-		
-		
 		-->
 		
 	</class>

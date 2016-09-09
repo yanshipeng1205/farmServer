@@ -33,6 +33,8 @@
 	
 	<mapping resource="com/hibernate/domain/Users.hbm.xml"/>
 	<mapping resource="com/hibernate/domain/Farms.hbm.xml"/>
+	<mapping resource="com/hibernate/domain/SensorStatus.hbm.xml"/>
+	<mapping resource="com/hibernate/domain/Controllers.hbm.xml"/>
 	</session-factory>
 	
 </hibernate-configuration>

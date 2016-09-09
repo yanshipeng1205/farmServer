@@ -1,5 +1,4 @@
 package com.hibernate.manager;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import org.hibernate.Query;
 import com.hibernate.dao.FarmsDao;
 import com.hibernate.dao.FarmsDaoImpl;
 import com.hibernate.domain.Farms;
-import com.hibernate.domain.Users;
 import com.hibernate.util.HibernateUtil;
 
 import server.util.UserInfo;

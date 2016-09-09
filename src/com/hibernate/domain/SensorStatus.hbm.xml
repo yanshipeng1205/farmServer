@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Houses Object/Relational file -->        
+<hibernate-mapping package="com.hibernate.domain">
+	<class name="SensorStatus" table="sensorstatus">
+		<id name="id" type="java.lang.Integer" column="id">
+		<generator class="native"/>
+		</id>
+		
+		<many-to-one name="farmId" class="Farms" column="farmId" />
+		<property name="date" type="java.sql.Date" column="date"/>
+		<property name="time" type="java.sql.Time" column="time" />
+		<property name="lightIntensity" type="java.lang.Integer" column="lightIntensity"/>
+		<property name="airTemperature" type="java.lang.Integer" column="airTemperature"/>
+		<property name="airHumidity" type="java.lang.Integer" column="airHumidity"/>
+		<property name="soilTemperature" type="java.lang.Integer" column="soilTemperature"/>
+		<property name="soilHumidity" type="java.lang.Integer" column="soilHumidity"/>
+		
+	</class>
+</hibernate-mapping>

@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import server.util.FarmInfo;
+
 
 class EncapToBytes
 {
@@ -16,15 +18,26 @@ class EncapToBytes
 	private int msgLen=0;
 	public EncapToBytes()
 	{
-//		try {
-////			dataOut.writeInt(MSGHEADER);
-////			dataOut.writeInt(msgLen);
-////			str.append(MSGHEADER);
-////			str.append(msgLen);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+
 	}
+	
+	public byte[] getBytes(byte msgID, FarmInfo farmInfo)
+	{
+		try {
+			byte[] msgBytes=farmInfo.toString().getBytes();
+System.out.println("FarmInfo:  "+farmInfo.toString());
+			msgLen=msgBytes.length+1;//需要把MSGID算进去
+			dataOut.writeInt(MSGHEADER);
+			dataOut.writeInt(msgLen);
+			dataOut.write(msgID);
+			dataOut.write(msgBytes);
+			dataOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return byteOut.toByteArray();
+	}
+	
 	public byte[] getBytes(byte msgID, byte val)
 	{
 		try {

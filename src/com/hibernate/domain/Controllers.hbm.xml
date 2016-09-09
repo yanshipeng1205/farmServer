@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Houses Object/Relational file -->        
+<hibernate-mapping package="com.hibernate.domain">
+	<class name="Controllers" table="Controllers">
+		<id name="id" type="java.lang.Integer" column="id">
+		<generator class="native"/>
+		</id>
+
+		<many-to-one name="farmId" class="Farms" column="farmId" />
+		<property name="date" type="java.sql.Date" column="date"/>
+		<property name="time" type="java.sql.Time" column="time" />
+		<property name="pumpDuty" type="java.lang.Integer" column="pumpDuty"/>
+		<property name="lightLevel" type="java.lang.Integer" column="lightLevel"/>
+		<property name="fanDuty" type="java.lang.Integer" column="fanDuty"/>
+		<property name="steerDuty" type="java.lang.Integer" column="steerDuty"/>
+		
+	</class>
+</hibernate-mapping>
